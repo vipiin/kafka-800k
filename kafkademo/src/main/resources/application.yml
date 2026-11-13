@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: kafka-batch-interview-lab
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    # --- PRODUCER TUNING (Throughput vs. Latency) ---
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: 1
+      batch-size: 65000
+      linger-ms: 10
+      compression-type: lz4
+
+    # --- CONSUMER BATCH TUNING ---
+    consumer:
+      group-id: batch-benchmark-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      max-poll-records: 500
+      fetch-min-size: 50000
+      fetch-max-wait: 500
+
+    # --- SPRING LISTENER TUNING ---
+    listener:
+      type: batch
+      ack-mode: batch
+      concurrency: 6
+
+# Custom Application Config
+app:
+  kafka:
+    topic: events-6p
