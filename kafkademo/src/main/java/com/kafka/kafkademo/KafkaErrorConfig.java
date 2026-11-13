@@ -21,7 +21,7 @@ public class KafkaErrorConfig {
         return handler;
     }
 
-    @Bean
+     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(
             ConsumerFactory<String, String> consumerFactory,
             DefaultErrorHandler batchErrorHandler) {
@@ -29,7 +29,12 @@ public class KafkaErrorConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
+        factory.setConcurrency(6); // <-- Spins up 6 threads: #0-0-C-1 through #0-5-C-1
+        factory.getContainerProperties().setAckMode(
+                org.springframework.kafka.listener.ContainerProperties.AckMode.BATCH
+        );
         factory.setCommonErrorHandler(batchErrorHandler);
         return factory;
     }
+
 }

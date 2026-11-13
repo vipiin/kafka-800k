@@ -42,13 +42,11 @@ public class EventBatchConsumer {
                 throw new BatchListenerFailedException("Failed at index " + i, ex, i);
             }
         }
-
-        long total = processedCount.addAndGet(validBatch.size());
-        if (total % 200_000 == 0 || records.size() < 500) {
-            long elapsed = System.currentTimeMillis() - startTime.get();
-            double throughput = (total * 1000.0) / Math.max(1, elapsed);
-            log.info("[THREAD: {}] Consumed: {} | Elapsed: {} ms | Throughput: {} events/sec",
-                    Thread.currentThread().getName(), total, elapsed, String.format("%.0f", throughput));
+          long total = processedCount.addAndGet(validBatch.size());
+        if (total % 50_000 < validBatch.size()) {
+            log.info("[THREAD: {}] Batch size: {} | Total consumed: {}",
+                    Thread.currentThread().getName(), validBatch.size(), total);
         }
+
     }
 }
